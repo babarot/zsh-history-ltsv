@@ -43,3 +43,20 @@ __zsh_history::history::get_all()
 {
     __zsh_history::history::get '{print key("cmd")}'
 }
+
+__zsh_history::history::edit()
+{
+    ${=EDITOR} "$ZSH_HISTORY_FILE" </dev/tty >/dev/tty
+}
+
+__zsh_history::history::show()
+{
+    local date dir cmd
+    cat "$ZSH_HISTORY_FILE" \
+        | __zsh_history::filter::awk '{print key("date"), key("dir"), key("cmd")}' \
+        | while read date dir cmd; \
+    do \
+        printf "%s\t%s\t%s\n" \
+        $(strftime "%FT%T%z" $date) "$dir" "$cmd"; \
+    done
+}
